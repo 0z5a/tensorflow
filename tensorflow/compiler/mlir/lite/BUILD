@@ -370,6 +370,7 @@ cc_library(
         "@llvm-project//mlir:RegisterAllDialects",
         "@llvm-project//mlir:RegisterAllPasses",
     ],
+    alwayslink = True,
 )
 
 tf_cc_binary(
@@ -1660,7 +1661,6 @@ cc_library(
         "@llvm-project//mlir:Support",
         "@llvm-project//mlir:TransformUtils",
         "@stablehlo//:stablehlo_ops",
-        "@xla//xla/mlir_hlo",
     ],
 )
 
