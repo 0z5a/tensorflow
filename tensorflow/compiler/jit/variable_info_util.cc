@@ -32,7 +32,6 @@ limitations under the License.
 #include "absl/strings/string_view.h"
 #include "absl/synchronization/notification.h"
 #include "absl/types/span.h"
-#include "tensorflow/compiler/jit/flags.h"
 #include "tensorflow/compiler/jit/pjrt_tensor_buffer.h"
 #include "tensorflow/compiler/jit/variable_info.h"
 #include "xla/tsl/platform/errors.h"
@@ -272,7 +271,6 @@ absl::Status LockVariables(absl::Span<VariableInfo*> variables) {
           const_cast<TensorBuffer*>(buf)->root_buffer() == buf &&
           variable->tensor()->TotalBytes() > 0 &&
           AsyncValueTensor::FromTensor(variable->tensor()) == nullptr &&
-          GetXlaOpsCommonFlags()->tf_xla_use_device_api.IsEnabledForGpu() &&
           dynamic_cast<const PjRtTensorBuffer*>(buf) == nullptr) {
         // Upgrade to an exclusive lock so PreparePjRtExecutableArguments can
         // safely update the variable's TensorBuffer to a PjRtTensorBuffer.
