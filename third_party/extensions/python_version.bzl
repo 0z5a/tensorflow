@@ -32,6 +32,7 @@ REQUIREMENTS = "//:requirements.txt"
 
 def _python_version_repo_impl(repository_ctx):
     version = repository_ctx.os.environ.get("HERMETIC_PYTHON_VERSION", "3.11")
+    py_kind = repository_ctx.os.environ.get("HERMETIC_PYTHON_VERSION_KIND", "")
     wheel_name = repository_ctx.os.environ.get("WHEEL_NAME", "tensorflow")
     wheel_collab = repository_ctx.os.environ.get("WHEEL_COLLAB", False)
     macosx_deployment_target = repository_ctx.os.environ.get("MACOSX_DEPLOYMENT_TARGET", "")
@@ -44,7 +45,7 @@ def _python_version_repo_impl(repository_ctx):
         "py_version.bzl",
         _PY_VERSION_BZL.format(
             version = version,
-            py_kind = "",  # TODO(pcloudy): introduce this value properly.
+            py_kind = py_kind,
             use_pywrap_rules = use_pywrap_rules,
             wheel_name = wheel_name,
             wheel_collab = wheel_collab,
@@ -57,10 +58,17 @@ python_version_repo = repository_rule(
     environ = [
         "HERMETIC_PYTHON_VERSION",
         "HERMETIC_PYTHON_VERSION_KIND",
+        "MACOSX_DEPLOYMENT_TARGET",
         "USE_PYWRAP_RULES",
+        "WHEEL_COLLAB",
+        "WHEEL_NAME",
     ],
 )
 
+def _python_version_ext_impl(mctx):
+    python_version_repo(name = "python_version_repo")
+    return mctx.extension_metadata(reproducible = True)
+
 python_version_ext = module_extension(
-    implementation = lambda mctx: python_version_repo(name = "python_version_repo"),
+    implementation = _python_version_ext_impl,
 )
